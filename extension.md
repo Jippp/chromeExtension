@@ -50,7 +50,17 @@
 
 #### content_scripts
 
-​	与页面共享DOM，但是不共享js
+​	与页面共享DOM，但是不共享js，所以独立于当前页面的js
+
+​	可以在content_scripts中将本扩展程序中的一些文件插入到符合条件的页面中。在content_scripts中的dom操作相当于在当前页面操作dom
+
+​	插入到页面中的文件window对象和当前页面的window一致
+
+​	三种注入时机：document_start document_end document_idel
+
++ `document_start`：style样式加载完成，domtree开始渲染
++ `document_end`：domtree渲染完成，DOMContentLoaded后
++ `document_idel`：默认，DOMContentLoaded之后，load之前，时机由浏览器确定
 
 ​	只能访问四个api
 
