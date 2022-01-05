@@ -22,9 +22,9 @@
 	"description": "chrome extension test",
 	// 图标
 	"icons": {
-		"16": "img/hello.png",
-		"48": "img/hello.png",
-		"128": "img/hello.png"
+		"16": "img/hello.png", // 信息栏显示的图标
+		"48": "img/hello.png", // 扩展程序的管理界面显示
+		"128": "img/hello.png" // 安装该扩展的时候显示，chrome商城中
 	},
 	// 浏览器右上角图标设置，browser_action、page_action、app必须三选一
 	// 3版本中直接用action
@@ -40,7 +40,8 @@
 		// 2种指定方式，如果指定JS，那么会自动生成一个空白的背景页
 		// 一般background是看不见页面的，所以直接指定一个js文件就可以
 		// "page": "background.html"
-		"scripts": ["js/background.js"]
+		"scripts": ["js/background.js"],
+		"persistent": true // 持续性，false表示需要时打开，空闲时关闭，设为false的称为event page
 	},
 
 	
@@ -56,7 +57,7 @@
 		{
 			//"matches": ["http://*/*", "https://*/*"],
 			// "<all_urls>" 表示匹配所有地址
-			"matches": ["<all_urls>"],
+			"matches": ["<all_urls>"], // 必须要有的
 			// 多个JS按顺序注入
 			"js": ["js/content-script.js"],
 			// JS的注入可以随便一点，但是CSS的注意就要千万小心了，因为一不小心就可能影响全局样式
@@ -77,7 +78,7 @@
 		"contextMenus", // 右键菜单
 		"tabs", // 标签
 		"notifications", // 通知
-		"webRequest", // web请求
+		// "webRequest", // web请求
 		"webRequestBlocking",
 		"storage", // 插件本地存储
 		"http://*/*", // 可以通过executeScript或者insertCSS访问的网站

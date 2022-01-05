@@ -1,4 +1,4 @@
-console.log('this is content-script js')
+// console.log('this is content-script js')
 
 // content_scripts注入时机为document_start
 // window.onload = () => {
@@ -46,3 +46,16 @@ document.body.onmouseup = () => {
   console.log(selectText)
 }
 
+// 向background发送消息
+chrome.runtime.sendMessage(
+  'content to background message',
+  (response) => {
+    console.log(response)
+  }
+)
+
+// 接收background发送的消息
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+  console.log(message, sender)
+  callback && callback('content receive background message: ' + message)
+})
