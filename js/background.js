@@ -1,9 +1,5 @@
 // console.log('background js')
 
-function add(a, b) {
-  return a + b
-}
-
 // 扩展程序注册完毕
 chrome.runtime.onInstalled.addListener(function() {
   console.log('扩展程序注册完成')
@@ -31,23 +27,37 @@ chrome.contextMenus.create({
 // content以及popup都可以监听到，可以通过sender判断做不同的操作
 chrome.runtime.onMessage.addListener((message, sender, callback) => {
   setTimeout(() => {
-    console.log(message, sender)
-    callback(message + 'background callback')
+    console.log(JSON.parse(message), sender)
+    callback(JSON.parse(message) + 'background callback')
   }, 1000)
 
   // 如果异步调用callback的话，需要return true，这样才能在content_script中执行回调
   return true
 })
 
-// 需要等待tabs加载完成，否则会报错
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tabs) => {
-  if(changeInfo.status === 'complete') {
-    // 异步获取
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      // 向指定tab的content_scripts发送消息
-      chrome.tabs.sendMessage(tabId, 'background to content', (response) => {
-        console.log(response)
+// 向content发送消息的函数
+const sendMessageToContent = (message, callback) => {
+  // 需要等待tabs加载完成，否则会报错
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tabs) => {
+    if(changeInfo.status === 'complete') {
+      // 异步获取
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        // 向指定tab的content_scripts发送消息
+        chrome.tabs.sendMessage(tabId, message, (response) => {
+          callback && callback(response)
+        })
       })
-    })
-  }
+    }
+  })
+}
+
+sendMessageToContent('background向content发送的消息', (response) => {
+  console.log(response)
 })
+
+
+
+// 挂载到window对象上，可以供popup使用
+window.myBackground = {
+  sendMessageToContent
+}

@@ -5,3 +5,5 @@ const testInject = () => {
 
 // 注入页面如果有同名变量会报错的
 // const ji = 'ji-ppp-content'
+
+// window.postMessage({ "container": inject }, "*")
