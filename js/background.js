@@ -27,8 +27,8 @@ chrome.contextMenus.create({
 // content以及popup都可以监听到，可以通过sender判断做不同的操作
 chrome.runtime.onMessage.addListener((message, sender, callback) => {
   setTimeout(() => {
-    console.log(JSON.parse(message), sender)
-    callback(JSON.parse(message) + 'background callback')
+    console.log(message, sender)
+    callback(message + 'background callback')
   }, 1000)
 
   // 如果异步调用callback的话，需要return true，这样才能在content_script中执行回调

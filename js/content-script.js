@@ -44,32 +44,32 @@ script.onload = () => {
 }
 
 // 向原始页面注入图片资源
-const pngPath = 'img/pic.png'
-const imgNode = document.createElement('img')
-imgNode.src = chrome.extension.getURL(pngPath)
-imgNode.setAttribute('width', '200')
-imgNode.setAttribute('height', '200')
-imgNode.style.transition = 'all 300ms ease 0s'
+// const pngPath = 'img/pic.png'
+// const imgNode = document.createElement('img')
+// imgNode.src = chrome.extension.getURL(pngPath)
+// imgNode.setAttribute('width', '200')
+// imgNode.setAttribute('height', '200')
+// imgNode.style.transition = 'all 300ms ease 0s'
 
-document.body.appendChild(imgNode)
-document.body.appendChild(script)
+// document.body.appendChild(imgNode)
+// document.body.appendChild(script)
 
-let isBlur = false
+// let isBlur = false
 
-function pngBlur() {
-  isBlur = !isBlur
-  imgNode.style.filter = isBlur ? 'blur(5px)' : 'none'
-}
-const divBtn = document.createElement('div')
-const divBtnInner = document.createElement('div')
-const styles = 'position: fixed; width: 50px; height: 50px; border-radius: 50%; z-index: 9; background-color: #ccc; cursor: pointer;'
-const innerStyles = 'width: 30px; height: 30px; border-radius: 50%; background-color: red; margin: 10px auto; box-shadow: rgba(0,0,0,.8) 3px 3px 10px;'
-divBtn.style = styles
-divBtnInner.style = innerStyles
-divBtn.appendChild(divBtnInner)
-document.body.appendChild(divBtn)
+// function pngBlur() {
+//   isBlur = !isBlur
+//   imgNode.style.filter = isBlur ? 'blur(5px)' : 'none'
+// }
+// const divBtn = document.createElement('div')
+// const divBtnInner = document.createElement('div')
+// const styles = 'position: fixed; width: 50px; height: 50px; border-radius: 50%; z-index: 9; background-color: #ccc; cursor: pointer;'
+// const innerStyles = 'width: 30px; height: 30px; border-radius: 50%; background-color: red; margin: 10px auto; box-shadow: rgba(0,0,0,.8) 3px 3px 10px;'
+// divBtn.style = styles
+// divBtnInner.style = innerStyles
+// divBtn.appendChild(divBtnInner)
+// document.body.appendChild(divBtn)
 
-divBtn.onclick = pngBlur
+// divBtn.onclick = pngBlur
 
 // document.body.onmouseup = () => {
 //   // 获取选中文本

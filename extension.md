@@ -130,6 +130,10 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
   + xxx.connext / xxx.getManifest / xxx.getURL / id / onConnect / onMessage / sendMessage
 + chrome.storage
 
+#### inject_script
+
+​	是通过`content_scripts`注入到当前页面的js文件，因为当前页面是访问不到`content_scripts`的内容的，如果真的需要在当前页面中使用`content_scirpts`中的一些东西，可以使用这种注入的方式。比如在当前页面的某个DOM中监听用户的某些行为来调用`content_scirpts`
+
 #### web_accessible_resources
 
 ​	该配置可以将一些扩展程序中的资源暴露到原始页面或者其他的扩展程序中
@@ -156,6 +160,8 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 
 ​	点击图标时打开的一个窗口网页，作为一些临时性的交互，生命周期不会太长，所以需要长时间运行的代码需要放到background中执行
 
+​	`popup`中的js，只能使用外部文件的形式
+
 ​	popup可以通过`chrome.extension.getBackgroundPage()`来获取background的window对象
 
 #### homepage_url
@@ -168,9 +174,77 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 
 #### popup和background
 
+##### popup向background发送消息
+
+​	`popup`可以直接通过`chrome.extension.getBackgroundPage()`拿到`backgroundjs`的全局上下文
+
+​	`popup`也可以通过`chrome.runtime.sendMessage(message, callback)`发送消息，`background`通过`chrome.runtime.onMessage.addListener(fn(message, sender, callback))`
+
++ message是要发送的消息，会通过`JSON.stringify()`包裹
++ callback是回调函数，接收方接收到消息之后执行
++ sender是发送方的一些信息
+
+```js
+const bgWindow = chrome.extension.getBackgroundPage()
+
+chrome.runtime.sendMessage('popup to background', (response) => {
+    console.log(response)
+})
+```
+
+```js
+// background.js
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+    setTimeout(() => {
+        console.log(message, sender)
+        callback('background calllback')
+    })
+    
+    return true
+})
+```
+
+​	需要注意的几点
+
++ 如果callback是异步调用的话，需要在监听器中`return true`告诉浏览器这个需要异步处理
+
+##### background向popup发送消息
+
+​	background是不能通过`chrome.runtime.sendMessage`的方式主动向popup发送消息的，只能通过`chrome.entension.getViews({ type: 'popup' })`获取到popup的全局上下文
+
+​	但是要注意的是只有在popup打开的时候才能获取到上下文
+
 #### background或popup和content
 
-#### inject和content
+##### content向background或popup发送消息
+
+​	也是通过`chrome.runtime.sendMessage`发送消息以及`chrome.runtime.onMessage.addListener`接收消息
+
+##### background或popup向content发送消息
+
+​	扩展程序在每一个浏览器tab都会有一个副本，所以需要找到tabid，才能向该tab的`content_script`发送消息
+
+```js
+const sendMessageToContent = (message, callback) => {
+  // 需要等待tabs加载完成，否则会报错
+  chrome.tabs.onUpdated.addListener((tabId, changeInfo, tabs) => {
+    if(changeInfo.status === 'complete') {
+      // 异步获取
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        console.log(tabs)
+        // 向指定tab的content_scripts发送消息
+        chrome.tabs.sendMessage(tabId, message, (response) => {
+          callback && callback(response)
+        })
+      })
+    }
+  })
+}
+```
+
+#### Inject和Content
+
+​	`window.postMessage`以及`window.addEventListener`
 
 ---
 
