@@ -115,5 +115,5 @@
 	// 默认语言
 	"default_locale": "zh_CN",
 	// devtools页面入口，注意只能指向一个HTML文件，不能是JS文件
-	"devtools_page": "devtools.html"
+	"devtools_page": "html/devtools.html"
 }

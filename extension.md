@@ -1,20 +1,16 @@
 ## Chrome扩展程序
 
-### 区分插件以及扩展程序
-
-​	Chrome扩展程序是用Web技术开发、用来增强浏览器功能的软件，是一系列html、css、js文件压缩成的`.crx`后缀的包，用于扩展浏览器功能。本质上是一个web页面
-
-​	Chrome插件是一个`.dll`的包，操作本地的二进制文件，可能造成一些安全问题，用于扩展浏览器内核的功能
+[参考文章](https://www.cnblogs.com/liuxianan/p/chrome-plugin-develop.html#%E4%BB%80%E4%B9%88%E6%98%AFchrome%E6%8F%92%E4%BB%B6)
 
 ### 简单介绍
 
-​	Chrome扩展程序可以利用Chrome暴露出来的API来调整浏览器行为或者修改页面内容
+​	Chrome扩展程序是用Web技术开发、用来增强浏览器功能的软件，是一系列html、css、js文件压缩成的`.crx`后缀的包，用于扩展浏览器功能。本质上是一个web页面。Chrome扩展程序可以利用Chrome暴露出来的API来调整浏览器行为或者修改页面内容
 
-​	一个扩展程序就是比正常的项目多了一个`manifest.json`文件，这个文件也是必须要有的
+​	Chrome插件是一个`.dll`的包，操作本地的二进制文件，用于扩展浏览器内核的功能，但是也可能造成一些安全问题
 
 ---
 
-### 功能展示
+### 常见功能介绍
 
 #### browserAction 浏览器右上角
 
@@ -44,6 +40,72 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 #### pageAction 特定页面显示
 
 ​	与browser action的区别就是，pageAction只有在特定页面才会变亮，否则一直都是灰色
+
+#### 自定义右键菜单
+
+​	通过`chrome.contextMenus`实现
+
+#### override 覆盖特定页面
+
+​	扩展程序支持`override`页面将Chrome默认的某些特定页面替换掉
+
+​	扩展程序可以替换掉如下页面：
+
++ 历史记录页面
++ 新标签页
++ 书签页
+
+​	不过一个扩展程序只能有一个默认页
+
+```json
+{
+    "chrome_url_overrides": {
+        "newtab": 'xxx',
+        "history": 'xxx',
+        "bookmarks": 'xxx'
+    }
+}
+```
+
+#### 添加新的devtools
+
+​	扩展程序被允许可以添加一个或多个和`Console`同级的面板页
+
+​	需要`manifest.json`配置，只能指定一个html文件，在html文件中引入js文件
+
+```json
+{
+    "devtools_pages": "html/devtools.html"
+}
+```
+
+```js
+// devtools.js
+
+// 第一个参数为标题
+// 第三个参数指定的html页面才是显示的html页面
+chrome.devtools.panels.create('MyPanel', 'img/hello.png', './../html/myDevtools.html', function(panel) {
+	console.log('自定义面板创建成功！'); // 注意这个log一般看不到
+});
+```
+
+#### 桌面通知
+
+​	`chrome.notifications`实现的，需要在`manifest.json`中配置
+
+```js
+chrome.contextMenus.create({
+  title: '一个简单的右键菜单',
+  onclick: function() {
+    chrome.notifications.create(null, {
+      type: 'basic',
+      iconUrl: 'img/pic.png',
+      title: 'this is title',
+      message: '桌面提醒：点击了菜单项'
+    })
+  }
+})
+```
 
 ---
 

@@ -14,7 +14,8 @@ chrome.contextMenus.create({
   title: '一个简单的右键菜单',
   onclick: function() {
     chrome.notifications.create(null, {
-      type: 'basic',
+      type: 'image',
+      imageUrl: 'img/pic.png',
       iconUrl: 'img/pic.png',
       title: 'this is title',
       message: '桌面提醒：点击了菜单项'
