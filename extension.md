@@ -1,6 +1,7 @@
 ## Chrome扩展程序
 
 [参考文章](https://www.cnblogs.com/liuxianan/p/chrome-plugin-develop.html#%E4%BB%80%E4%B9%88%E6%98%AFchrome%E6%8F%92%E4%BB%B6)
+[官方文档](https://developer.chrome.com/docs/extensions/mv3/messaging/#native-messaging)
 
 ### 简单介绍
 

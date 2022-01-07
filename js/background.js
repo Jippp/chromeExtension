@@ -56,7 +56,12 @@ sendMessageToContent('background向content发送的消息', (response) => {
   console.log(response)
 })
 
-
+chrome.cookies.get({
+  url: 'https://www.baidu.com/',
+  name: 'COOKIE_SESSION'
+}, (cookie) => {
+  console.log(cookie)
+})
 
 // 挂载到window对象上，可以供popup使用
 window.myBackground = {
