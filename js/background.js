@@ -63,7 +63,17 @@ chrome.cookies.get({
   console.log(cookie)
 })
 
+const getCookie = (path, name, callback) => {
+  chrome.cookies.get({
+    url: path,
+    name: name
+  }, (cookie) => {
+    callback && callback(cookie)
+  })
+}
+
 // 挂载到window对象上，可以供popup使用
 window.myBackground = {
-  sendMessageToContent
+  sendMessageToContent,
+  getCookie,
 }
