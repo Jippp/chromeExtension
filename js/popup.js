@@ -1,12 +1,10 @@
-// 直接拿到background的全局对象
-const { myBackground } = chrome.extension.getBackgroundPage();
-
-console.log(myBackground)
-
 function popupTest(str) {
   return str + ' popup'
 }
 
+/* 消息通信 */
+/* 发送消息 */
+// 向background发送消息
 const sendMessageToBg = (message, callback) => {
   // 向background发送消息
   // 会将消息转为json格式
@@ -20,21 +18,30 @@ sendMessageToBg({
   console.log(response)
 })
 
-// 接收通过connect发送的消息
-// chrome.extension.onConnect.addListener((port) => {
-//   if(port.name === 'CONTENTTOPOPUPCONNECT') {
-//     port.onMessage.addListener((message) => {
-//       if(message) {
-//         port.postMessage('popup收到了content的消息')
-//       }
-//     })
-//   }
+/* 接收消息 */
+// 接收content通过connect建立连接发送的消息
+chrome.extension.onConnect.addListener((port) => {
+  if(port.name === 'CONTENTTOPOPUPCONNECT') {
+    port.onMessage.addListener((message) => {
+      if(message) {
+        port.postMessage('popup收到了content的消息')
+      }
+    })
+  }
+})
+
+// TODO？？？
+// chrome.runtime.onMessage.addListener((message, sender, callback) => {
+//   console.log(message, sender)
+//   callback && callback(message + 'popup接受到了消息')
 // })
 
-chrome.runtime.onMessage.addListener((message, sender, callback) => {
-  console.log(message, sender)
-  callback && callback(message + 'popup接受到了消息')
-})
+// 直接拿到background的全局对象
+const { myBackground } = chrome.extension.getBackgroundPage();
+console.log(myBackground)
+
+
+
 
 
 // demo

@@ -7,13 +7,13 @@
 
 ### 简单介绍
 
-​	Chrome扩展程序是用Web技术开发、用来增强浏览器功能的软件，是一系列html、css、js文件压缩成的`.crx`后缀的包，用于扩展浏览器功能。本质上是一个web页面。Chrome扩展程序可以利用Chrome暴露出来的API来调整浏览器行为或者修改页面内容
+​	Chrome扩展程序是用Web技术开发、利用Chrome提供的一系列API来调整浏览器行为或者修改页面内容进而扩展浏览器功能的，是一系列html、css、js文件压缩成的`.crx`后缀的包。本质上是一个web页面。
 
 ​	Chrome插件是一个`.dll`的包，操作本地的二进制文件，用于扩展浏览器内核的功能，但是也可能造成一些安全问题
 
 ---
 
-### 常见功能介绍 TODO截图
+### 常见功能介绍(演示)
 
 #### browserAction 浏览器右上角
 
@@ -50,6 +50,17 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 
 ​	通过`chrome.contextMenus`实现
 
+```js
+// background.js
+
+chrome.contextMenus.create({
+  title: '一个简单的右键菜单',
+  onclick: function() {
+    alert('点击了右键菜单！')
+  }
+})
+```
+
 #### override 覆盖特定页面
 
 ​	扩展程序支持`override`页面将Chrome默认的某些特定页面替换掉
@@ -63,6 +74,7 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 ​	不过一个扩展程序只能覆盖掉一个页面
 
 ```json
+// manifest.json
 {
     "chrome_url_overrides": {
         "newtab": 'xxx',
@@ -79,6 +91,8 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 ​	需要`manifest.json`配置，只能指定一个html文件，在html文件中引入js文件
 
 ```json
+// manifest.json
+
 {
     "devtools_pages": "html/devtools.html"
 }
@@ -97,6 +111,8 @@ chrome.devtools.panels.create('MyPanel', 'img/hello.png', './../html/myDevtools.
 #### 桌面通知
 
 ​	`chrome.notifications`实现的，需要在`manifest.json`中配置
+
+![图片](./notification.JPG)
 
 ```js
 chrome.contextMenus.create({
@@ -158,7 +174,7 @@ chrome.contextMenus.create({
 
 #### content_scripts
 
-​	扩展程序向当前页面注入脚本的一种形式，与页面共享DOM，在content_scripts中的dom操作相当于在当前页面操作dom。但是不共享js，所以和当前页面的js是互不影响的，比如一声明一些变量名和事件函数是不会影响到当前页面js的
+​	扩展程序向当前页面注入脚本的一种形式，与页面共享DOM，在content_scripts中的dom操作相当于在当前页面操作dom。但是不共享js，所以和当前页面的js是互不影响的，比如声明一些变量和挂载一些事件函数是不会影响到当前页面js的
 
 ​	此外还可以在content_scripts中将本扩展程序中的一些文件(js、css、图片等)注入到符合条件的页面中
 
@@ -232,12 +248,12 @@ chrome.contextMenus.create({
 
 ### 通信 TODO按照表格整理代码
 
-|            | background                                                   | content                                                      | inject                                  | popup                                                        |
-| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
-| background | /                                                            | chrome.tabs.sendMessage()<br/>chrome.tabs.connect()/chrome.runtime.onConnect() | /                                       | chrome.extension.getViews()                                  |
-| content    | chrome.runtime.sendMessage()<br/>chrome.extension.connect()/chrome.extension.onConnect() | /                                                            | window.postMessage()<br/>自定义事件函数 | chrome.runtime.sendMessage()<br/>chrome.extension.connect()/chrome.extension.onConnect() |
-| inject     | /                                                            | window.postMessage()                                         | /                                       | /                                                            |
-| popup      | chrome.extension.getBackgroundPage()<br/>chrome.runtime.sendMessage() | chrome.tabs.sendMessage()<br/>chrome.tabs.connect()/chrome.runtime.onConnect() | /                                       | /                                                            |
+|            | background                                                   | content                                                      | inject                                  | popup                                                   |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------- |
+| background | /                                                            | chrome.tabs.sendMessage()<br/>chrome.tabs.connect()/chrome.runtime.onConnect() | /                                       | chrome.extension.getViews()                             |
+| content    | chrome.runtime.sendMessage()<br/>chrome.extension.connect()/chrome.extension.onConnect() | /                                                            | window.postMessage()<br/>自定义事件函数 | chrome.extension.connect()/chrome.extension.onConnect() |
+| inject     | /                                                            | window.postMessage()                                         | /                                       | /                                                       |
+| popup      | chrome.extension.getBackgroundPage()<br/>chrome.runtime.sendMessage() | chrome.tabs.sendMessage()<br/>chrome.tabs.connect()/chrome.runtime.onConnect() | /                                       | /                                                       |
 
 #### popup和background
 

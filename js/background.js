@@ -23,20 +23,11 @@ chrome.contextMenus.create({
   }
 })
 
-// 监听从content_scripts以及popup发送过来的消息
-// 监听所有打开页面的扩展中content_scripts，只会处理最先接收到的
-// content以及popup都可以监听到，可以通过sender判断做不同的操作
-chrome.runtime.onMessage.addListener((message, sender, callback) => {
-  setTimeout(() => {
-    console.log(message, sender)
-    callback(message + 'background callback')
-  }, 1000)
+/* 消息通信 */
 
-  // 如果异步调用callback的话，需要return true，这样才能在content_script中执行回调
-  return true
-})
-
+/* 发送消息 */
 // 向content发送消息的函数
+// 两种方式：chrome.tabs.sendMessage以及通过chrome.tabs.connect建立连接通信
 const sendMessageToContent = (message, callback) => {
   // 需要等待tabs加载完成，否则会报错
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tabs) => {
@@ -59,6 +50,20 @@ const sendMessageToContent = (message, callback) => {
 
 sendMessageToContent('background向content发送的消息', (response) => {
   console.log(response)
+})
+
+/* 接收消息 */
+// 监听从content_scripts以及popup发送过来的消息
+// 监听所有打开页面的扩展中content_scripts，只会处理最先接收到的
+// content以及popup都可以监听到，可以通过sender判断做不同的操作
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+  setTimeout(() => {
+    console.log(message, sender)
+    callback(message + 'background callback')
+  }, 1000)
+
+  // 如果异步调用callback的话，需要return true，这样才能在content_script中执行回调
+  return true
 })
 
 // 获取cookie

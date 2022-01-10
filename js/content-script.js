@@ -32,16 +32,15 @@ function test() {
 // }
 
 // 向原始页面注入js
-const injectjsPath = 'js/inject.js'
-const script = document.createElement('script')
-// script.setAttribute('type', 'text/javascript')
-// 路径需要使用chrome.extension.getURL生成, 否则会拼接上所在页面的前缀
-script.src = chrome.extension.getURL(injectjsPath)
+// const injectjsPath = 'js/inject.js'
+// const script = document.createElement('script')
+// // 路径需要使用chrome.extension.getURL生成, 否则会拼接上所在页面的前缀
+// script.src = chrome.extension.getURL(injectjsPath)
 
-// script加载完成后应立即移除
-script.onload = () => {
-  document.body.removeChild(script)
-}
+// // script加载完成后应立即移除
+// script.onload = () => {
+//   document.body.removeChild(script)
+// }
 
 // 向原始页面注入图片资源
 const pngPath = 'img/pic.png'
@@ -77,6 +76,10 @@ document.body.appendChild(imgNode)
 //   console.log(selectText)
 // }
 
+
+/* 消息通信 */
+
+/* 发送消息 */
 // 向background发送消息
 chrome.runtime.sendMessage(
   'content to background message',
@@ -86,19 +89,18 @@ chrome.runtime.sendMessage(
 )
 
 // 向popup发送消息
-// const port = chrome.extension.connect({ name: 'CONTENTTOPOPUPCONNECT' })
-// port.postMessage({ value: '这个content向popup发送的消息' })
-// port.onMessage.addListener((message) => {
-//   console.log(message)
-// })
+const port = chrome.extension.connect({ name: 'CONTENTTOPOPUPCONNECT' })
+port.postMessage({ value: '这个content向popup发送的消息' })
+port.onMessage.addListener((message) => {
+  console.log(message)
+})
 
-chrome.runtime.sendMessage(
-  'content向popop发送的消息',
-  (response) => {
-    console.log(response)
-  }
-)
-
+/* 接收消息 */
+// 接收background发送的消息
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+  console.log(message, sender)
+  callback && callback('content receive background message: ' + message)
+})
 // background通过connect的方式通信，接收信息
 chrome.runtime.onConnect.addListener((port) => {
   if(port.name === 'BACKGROUNDTOCONTENT') {
@@ -109,11 +111,12 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
-// 接收background发送的消息
-chrome.runtime.onMessage.addListener((message, sender, callback) => {
-  console.log(message, sender)
-  callback && callback('content receive background message: ' + message)
-})
+chrome.runtime.sendMessage(
+  'content向popop发送的消息',
+  (response) => {
+    console.log(response)
+  }
+)
 
 // window.addEventListener('message', (message) => {
 //   console.log(message.container)
