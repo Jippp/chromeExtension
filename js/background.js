@@ -61,13 +61,7 @@ sendMessageToContent('background向content发送的消息', (response) => {
   console.log(response)
 })
 
-chrome.cookies.get({
-  url: 'https://www.baidu.com/',
-  name: 'COOKIE_SESSION'
-}, (cookie) => {
-  console.log(cookie)
-})
-
+// 获取cookie
 const getCookie = (path, name, callback) => {
   chrome.cookies.get({
     url: path,

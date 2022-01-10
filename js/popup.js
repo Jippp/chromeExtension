@@ -21,14 +21,19 @@ sendMessageToBg({
 })
 
 // 接收通过connect发送的消息
-chrome.extension.onConnect.addListener((port) => {
-  if(port.name === 'CONTENTTOPOPUPCONNECT') {
-    port.onMessage.addListener((message) => {
-      if(message) {
-        port.postMessage('popup收到了content的消息')
-      }
-    })
-  }
+// chrome.extension.onConnect.addListener((port) => {
+//   if(port.name === 'CONTENTTOPOPUPCONNECT') {
+//     port.onMessage.addListener((message) => {
+//       if(message) {
+//         port.postMessage('popup收到了content的消息')
+//       }
+//     })
+//   }
+// })
+
+chrome.runtime.onMessage.addListener((message, sender, callback) => {
+  console.log(message, sender)
+  callback && callback(message + 'popup接受到了消息')
 })
 
 

@@ -44,14 +44,14 @@ script.onload = () => {
 }
 
 // 向原始页面注入图片资源
-// const pngPath = 'img/pic.png'
-// const imgNode = document.createElement('img')
-// imgNode.src = chrome.extension.getURL(pngPath)
-// imgNode.setAttribute('width', '200')
-// imgNode.setAttribute('height', '200')
-// imgNode.style.transition = 'all 300ms ease 0s'
+const pngPath = 'img/pic.png'
+const imgNode = document.createElement('img')
+imgNode.src = chrome.extension.getURL(pngPath)
+imgNode.setAttribute('width', '200')
+imgNode.setAttribute('height', '200')
+imgNode.style.transition = 'all 300ms ease 0s'
 
-// document.body.appendChild(imgNode)
+document.body.appendChild(imgNode)
 // document.body.appendChild(script)
 
 // let isBlur = false
@@ -86,11 +86,18 @@ chrome.runtime.sendMessage(
 )
 
 // 向popup发送消息
-const port = chrome.extension.connect({ name: 'CONTENTTOPOPUPCONNECT' })
-port.postMessage({ value: '这个content向popup发送的消息' })
-port.onMessage.addListener((message) => {
-  console.log(message)
-})
+// const port = chrome.extension.connect({ name: 'CONTENTTOPOPUPCONNECT' })
+// port.postMessage({ value: '这个content向popup发送的消息' })
+// port.onMessage.addListener((message) => {
+//   console.log(message)
+// })
+
+chrome.runtime.sendMessage(
+  'content向popop发送的消息',
+  (response) => {
+    console.log(response)
+  }
+)
 
 // background通过connect的方式通信，接收信息
 chrome.runtime.onConnect.addListener((port) => {

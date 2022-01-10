@@ -3,6 +3,8 @@
 [参考文章](https://www.cnblogs.com/liuxianan/p/chrome-plugin-develop.html#%E4%BB%80%E4%B9%88%E6%98%AFchrome%E6%8F%92%E4%BB%B6)
 [官方文档](https://developer.chrome.com/docs/extensions/mv3/messaging/#native-messaging)
 
+[中文版教程](http://chrome.cenchy.com/index.html)
+
 ### 简单介绍
 
 ​	Chrome扩展程序是用Web技术开发、用来增强浏览器功能的软件，是一系列html、css、js文件压缩成的`.crx`后缀的包，用于扩展浏览器功能。本质上是一个web页面。Chrome扩展程序可以利用Chrome暴露出来的API来调整浏览器行为或者修改页面内容
@@ -130,13 +132,7 @@ chrome.contextMenus.create({
 {
     "manifest_version": 2,
   	"name": "simple-extension",
-    "version": "0.1.0",
-    "background": {
-        "page": "pagePath",
-        "scripts": "path" || [path1, path2],
-        // 优化性能，在被需要的时候加载，空闲时关闭
-        "persistent": false
-    }
+    "version": "0.1.0"
 }
 ```
 
@@ -149,6 +145,7 @@ chrome.contextMenus.create({
 ```json
 {
 	"background": {
+        "page": "pagePath",
         "scripts": ["event-page.js"],
         "persistent": false
     }   
@@ -161,11 +158,11 @@ chrome.contextMenus.create({
 
 #### content_scripts
 
-​	当前扩展程序向页面注入脚本的一种形式，与页面共享DOM，但是不共享js，所以独立于当前页面的js
+​	扩展程序向当前页面注入脚本的一种形式，与页面共享DOM，在content_scripts中的dom操作相当于在当前页面操作dom。但是不共享js，所以和当前页面的js是互不影响的，比如一声明一些变量名和事件函数是不会影响到当前页面js的
 
-​	可以在content_scripts中将本扩展程序中的一些文件(js、css、图片等)插入到符合条件的页面中。在content_scripts中的dom操作相当于在当前页面操作dom
+​	此外还可以在content_scripts中将本扩展程序中的一些文件(js、css、图片等)注入到符合条件的页面中
 
-​	插入到页面中的文件window对象和当前页面的window一致
+> 注入到页面中的js的window对象和当前页面的window一致
 
 ```json
 {
@@ -225,9 +222,7 @@ chrome.contextMenus.create({
 
 ​	点击图标时打开的一个窗口网页，作为一些临时性的交互，生命周期不会太长，所以需要长时间运行的代码需要放到background中执行
 
-​	`popup`中的js，只能使用外部文件的形式
-
-​	popup可以通过`chrome.extension.getBackgroundPage()`来获取background的window对象
+​	如果需要在`popup`中使用js，只能使用外部文件的形式
 
 #### homepage_url
 
@@ -235,7 +230,14 @@ chrome.contextMenus.create({
 
 ---
 
-### 通信
+### 通信 TODO按照表格整理代码
+
+|            | background                                                   | content                                                      | inject                                  | popup                                                        |
+| ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------ |
+| background | /                                                            | chrome.tabs.sendMessage()<br/>chrome.tabs.connect()/chrome.runtime.onConnect() | /                                       | chrome.extension.getViews()                                  |
+| content    | chrome.runtime.sendMessage()<br/>chrome.extension.connect()/chrome.extension.onConnect() | /                                                            | window.postMessage()<br/>自定义事件函数 | chrome.runtime.sendMessage()<br/>chrome.extension.connect()/chrome.extension.onConnect() |
+| inject     | /                                                            | window.postMessage()                                         | /                                       | /                                                            |
+| popup      | chrome.extension.getBackgroundPage()<br/>chrome.runtime.sendMessage() | chrome.tabs.sendMessage()<br/>chrome.tabs.connect()/chrome.runtime.onConnect() | /                                       | /                                                            |
 
 #### popup和background
 
@@ -275,7 +277,7 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
 
 ##### background向popup发送消息
 
-​	background是不能通过`chrome.runtime.sendMessage`的方式主动向popup发送消息的，只能通过`chrome.entension.getViews({ type: 'popup' })`获取到popup的全局上下文
+​	background是不能通过`chrome.runtime.sendMessage()`或者是`chrome.extension.connect()`的方式主动向popup发送消息的，只能通过`chrome.entension.getViews({ type: 'popup' })`获取到popup的全局上下文
 
 ​	但是要注意的是只有在popup打开的时候才能获取到上下文
 
@@ -313,9 +315,17 @@ const sendMessageToContent = (message, callback) => {
 
 #### 特殊的通信方式
 
-​	`chrome.tabs.connect(tabID, { name: 连接name })`或`chrome.extension.connect({ name: 连接name})`建立一个连接
+##### 建立连接
 
-​	`chrome.runtime.onConnect.addListener()`监听连接
+​	`chrome.tabs.connect(tabID, { name: 连接的name })`
+
+​	`chrome.extension.connect({ name: 连接name})`
+
+##### 监听连接
+
+​	`chrome.runtime.onConnect.addListener((port) => {})`
+
+​	`chrome.extension.onConnect.addListener()`监听连接
 
 ---
 
