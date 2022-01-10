@@ -44,9 +44,14 @@ const sendMessageToContent = (message, callback) => {
       // 异步获取
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         // 向指定tab的content_scripts发送消息
-        chrome.tabs.sendMessage(tabId, message, (response) => {
-          callback && callback(response)
-        })
+        // chrome.tabs.sendMessage(tabId, message, (response) => {
+        //   callback && callback(response)
+        // })
+
+        // 通过connect的方式建立连接
+        const port = chrome.tabs.connect(tabId, { name: 'BACKGROUNDTOCONTENT' })
+        port.postMessage(message)
+        port.onMessage.addListener(callback)
       })
     }
   })
@@ -77,3 +82,18 @@ window.myBackground = {
   sendMessageToContent,
   getCookie,
 }
+
+// 特定网址显示
+// chrome.runtime.onInstalled.addListener(function(){
+// 	chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
+// 		chrome.declarativeContent.onPageChanged.addRules([
+// 			{
+// 				conditions: [
+// 					// 只有打开百度才显示pageAction
+// 					new chrome.declarativeContent.PageStateMatcher({pageUrl: {urlContains: 'baidu.com'}})
+// 				],
+// 				actions: [new chrome.declarativeContent.ShowPageAction()]
+// 			}
+// 		]);
+// 	});
+// });

@@ -11,7 +11,7 @@
 
 ---
 
-### 常见功能介绍
+### 常见功能介绍 TODO截图
 
 #### browserAction 浏览器右上角
 
@@ -42,6 +42,8 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 
 ​	与browser action的区别就是，pageAction只有在特定页面才会变亮，否则一直都是灰色
 
+​	和browser action只能选一个，否则会报错
+
 #### 自定义右键菜单
 
 ​	通过`chrome.contextMenus`实现
@@ -52,11 +54,11 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 
 ​	扩展程序可以替换掉如下页面：
 
-+ 历史记录页面
-+ 新标签页
-+ 书签页
++ 历史记录页面：chrome://history
++ 新标签页: chrome://newtab
++ 书签页: chrome://bookmarks
 
-​	不过一个扩展程序只能有一个默认页
+​	不过一个扩展程序只能覆盖掉一个页面
 
 ```json
 {
@@ -86,7 +88,7 @@ chromw.browserAction.setBadgeBackgroundColor({color: [255, 0, 255]})
 // 第一个参数为标题
 // 第三个参数指定的html页面才是显示的html页面
 chrome.devtools.panels.create('MyPanel', 'img/hello.png', './../html/myDevtools.html', function(panel) {
-	console.log('自定义面板创建成功！'); // 注意这个log一般看不到
+	console.log('自定义面板创建成功！'); 
 });
 ```
 
@@ -118,13 +120,13 @@ chrome.contextMenus.create({
 
 ​	扩展程序一般以`browser action`或`page action`的形式在浏览器上呈现，二者只存其一
 
-#### manifest.json配置
+#### manifest.json配置文件
 
 ​	是所有和扩展程序有关的配置，必须在根目录下，该文件用来配置一些资源、权限等。其中`manifest_version`、`name`、`version`是必须的
 
 > webapp的配置文件也叫manifest.json
 
-```js
+```json
 {
     "manifest_version": 2,
   	"name": "simple-extension",
@@ -193,11 +195,11 @@ chrome.contextMenus.create({
   + xxx.connext / xxx.getManifest / xxx.getURL / id / onConnect / onMessage / sendMessage
 + chrome.storage
 
-#### inject_script
+#### inject_scripts
 
 ​	是通过`content_scripts`注入到当前页面的js文件，因为当前页面是访问不到`content_scripts`的内容的，如果真的需要在当前页面中使用`content_scirpts`中的一些东西，可以使用这种注入的方式。比如在当前页面的某个DOM中监听用户的某些行为来调用`content_scirpts`
 
-#### web_accessible_resources
+##### web_accessible_resources配置项
 
 ​	该配置可以将一些扩展程序中的资源暴露到原始页面或者其他的扩展程序中
 
@@ -229,7 +231,7 @@ chrome.contextMenus.create({
 
 #### homepage_url
 
-​	扩展程序的主页设置
+​	扩展程序的主页设置，配置项中，是一个网络上的url
 
 ---
 
@@ -308,6 +310,12 @@ const sendMessageToContent = (message, callback) => {
 #### Inject和Content
 
 ​	`window.postMessage`以及`window.addEventListener`
+
+#### 特殊的通信方式
+
+​	`chrome.tabs.connect(tabID, { name: 连接name })`或`chrome.extension.connect({ name: 连接name})`建立一个连接
+
+​	`chrome.runtime.onConnect.addListener()`监听连接
 
 ---
 
