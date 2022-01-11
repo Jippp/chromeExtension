@@ -73,7 +73,12 @@ document.body.appendChild(imgNode)
 // document.body.onmouseup = () => {
 //   // 获取选中文本
 //   const selectText = document.getSelection().toString()
-//   console.log(selectText)
+//   const target = chrome.i18n.getMessage('name')
+//   if(selectText === target) {
+//     alert(selectText)
+//   }else {
+//     console.log(selectText)
+//   }
 // }
 
 

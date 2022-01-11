@@ -3,6 +3,7 @@
     "message": "扩展的描述信息"
   },
   "name": {
-    "message": "扩展的名称"
+    "message": "扩展的名称",
+    "description": "对name的描述"
   }
 }
