@@ -18,7 +18,7 @@
 		"48": "img/hello.png", // 扩展程序的管理界面显示
 		"128": "img/hello.png" // 安装该扩展的时候显示，chrome商城中
 	},
-	// 浏览器右上角图标设置，browser_action、page_action、app只能三选一
+	// 浏览器右上角图标设置，browser_action、page_action只能二选一
 	// 3版本中直接用action
 	"browser_action": {
 		// "default_icon": "img/hello.png",
@@ -71,6 +71,7 @@
 		"http://*/*", // 权限作用的url
 		"https://*/*" // 权限作用的url
 	],
+
 	// 普通页面能够直接访问的插件资源列表，如果不设置是无法直接访问的
 	// v3版本更加精细的控制需要暴露的文件
 	// "web_accessible_resources": [{
@@ -80,8 +81,10 @@
 	// 	"extension_ids": [xxx]
 	// }],
 	"web_accessible_resources": ["js/inject.js", "img/pic.png"],
+
 	// 插件主页，一个url
 	"homepage_url": "https://www.baidu.com",
+	
 	// 覆盖浏览器默认页面, 只能覆盖一个
 	// "chrome_url_overrides": {
 	// 	// 覆盖浏览器默认的新标签页
