@@ -17,11 +17,11 @@
 
 #### browserAction 浏览器右上角
 
-​	可以拥有一个icon、一个tooltip、一个badge、一个popup
+​	由一个icon、一个tooltip、一个badge、一个popup组成
 
-##### 图标
+##### icon
 
-​	走配置或手动调用setIcon()
+​	走配置或手动调用setIcon()，如果没有设置，就会展示默认icon
 
 ##### tooltip
 
@@ -142,13 +142,11 @@ chrome.contextMenus.create({
 
 ​	是所有和扩展程序有关的配置，必须在根目录下，该文件用来配置一些资源、权限等。其中`manifest_version`、`name`、`version`是必须的
 
-> webapp的配置文件也叫manifest.json
-
 ```json
 {
     "manifest_version": 2,
   	"name": "simple-extension",
-    "version": "0.1.0"
+    "version": "1.0.0"
 }
 ```
 
@@ -246,7 +244,7 @@ chrome.contextMenus.create({
 
 ---
 
-### 通信 TODO按照表格整理代码
+### 通信
 
 |            | background                                                   | content                                                      | inject                                  | popup                                                   |
 | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------- |
@@ -287,15 +285,17 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
 })
 ```
 
-​	需要注意的几点
+​	需要注意的是
 
 + 如果callback是异步调用的话，需要在监听器中`return true`告诉浏览器这个需要异步处理
 
 ##### background向popup发送消息
 
-​	background是不能通过`chrome.runtime.sendMessage()`或者是`chrome.extension.connect()`的方式主动向popup发送消息的，只能通过`chrome.entension.getViews({ type: 'popup' })`获取到popup的全局上下文
++ 通过`chrome.runtime.sendMessage()`
++ 通过`chrome.extension.connect()`
++ 通过`chrome.entension.getViews({ type: 'popup' })`获取到popup的全局上下文，但是要注意的是只有在popup打开的时候才能获取到上下文
 
-​	但是要注意的是只有在popup打开的时候才能获取到上下文
+与popup通信要注意，如果popup没有打开是无法通信的，只有在popup打开后刷新background才能进行通信
 
 #### background或popup和content
 
@@ -305,14 +305,15 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
 
 ##### background或popup向content发送消息
 
-​	扩展程序在每一个浏览器tab都会有一个副本，所以需要找到tabid，才能向该tab的`content_script`发送消息
+​	扩展程序在每一个浏览器tab都会有一个副本，所以需要找到当前活跃的tab的tabid，才能向该tab的`content_script`发送消息
 
 ```js
 const sendMessageToContent = (message, callback) => {
-  // 需要等待tabs加载完成，否则会报错
+  // 需要等待tab加载完成，否则会报错
+  // 如果是异步调用是不需要这一层的
   chrome.tabs.onUpdated.addListener((tabId, changeInfo, tabs) => {
+    // 判断当前tab加载完成
     if(changeInfo.status === 'complete') {
-      // 异步获取
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         console.log(tabs)
         // 向指定tab的content_scripts发送消息
@@ -343,22 +344,3 @@ const sendMessageToContent = (message, callback) => {
 
 ​	`chrome.extension.onConnect.addListener()`监听连接
 
----
-
-### chrome几种常见API介绍
-
-#### chrome.tabs
-
-#### chrome.runtime
-
-#### chrome.webRequest
-
-#### chrome.window
-
-#### chrome.storage
-
-#### chrome.contentMenus
-
-#### chrome.devtools
-
-#### chrome.extension

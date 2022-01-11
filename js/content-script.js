@@ -89,11 +89,19 @@ chrome.runtime.sendMessage(
 )
 
 // 向popup发送消息
+// 通过connect建立长连接发送消息
 const port = chrome.extension.connect({ name: 'CONTENTTOPOPUPCONNECT' })
 port.postMessage({ value: '这个content向popup发送的消息' })
 port.onMessage.addListener((message) => {
   console.log(message)
 })
+// 通过chrome.runtime.sendMessage发送消息
+// chrome.runtime.sendMessage(
+//   'content向popop发送的消息',
+//   (response) => {
+//     console.log(response)
+//   }
+// )
 
 /* 接收消息 */
 // 接收background发送的消息
@@ -102,6 +110,7 @@ chrome.runtime.onMessage.addListener((message, sender, callback) => {
   callback && callback('content receive background message: ' + message)
 })
 // background通过connect的方式通信，接收信息
+// 如果popup没有打开，会报没有接收端的错误
 chrome.runtime.onConnect.addListener((port) => {
   if(port.name === 'BACKGROUNDTOCONTENT') {
     port.onMessage.addListener((message) => {
@@ -110,13 +119,6 @@ chrome.runtime.onConnect.addListener((port) => {
     })
   }
 })
-
-chrome.runtime.sendMessage(
-  'content向popop发送的消息',
-  (response) => {
-    console.log(response)
-  }
-)
 
 // window.addEventListener('message', (message) => {
 //   console.log(message.container)

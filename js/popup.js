@@ -19,8 +19,9 @@ sendMessageToBg({
 })
 
 /* 接收消息 */
-// 接收content通过connect建立连接发送的消息
+// 接收通过connect建立连接发送的消息
 chrome.extension.onConnect.addListener((port) => {
+  // content发送的
   if(port.name === 'CONTENTTOPOPUPCONNECT') {
     port.onMessage.addListener((message) => {
       if(message) {
@@ -28,9 +29,16 @@ chrome.extension.onConnect.addListener((port) => {
       }
     })
   }
+  // background发送的
+  if(port.name === 'BACKGROUNDTOPOPUPCONNECT') {
+    port.onMessage.addListener((message) => {
+      if(message) {
+        port.postMessage('popup收到了background的消息')
+      }
+    })
+  }
 })
-
-// TODO？？？
+// 接收content通过chrome.runtime.sendMessage的方式发送的消息
 // chrome.runtime.onMessage.addListener((message, sender, callback) => {
 //   console.log(message, sender)
 //   callback && callback(message + 'popup接受到了消息')

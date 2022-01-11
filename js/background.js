@@ -52,6 +52,14 @@ sendMessageToContent('background向content发送的消息', (response) => {
   console.log(response)
 })
 
+// 向popup发送消息，如果popup打开需要再次刷新background才能通信
+const port = chrome.extension.connect({ name: 'BACKGROUNDTOPOPUPCONNECT' })
+port.postMessage({ value: 'background向popup发送的消息' })
+port.onMessage.addListener((message) => {
+  console.log(message)
+})
+
+
 /* 接收消息 */
 // 监听从content_scripts以及popup发送过来的消息
 // 监听所有打开页面的扩展中content_scripts，只会处理最先接收到的
