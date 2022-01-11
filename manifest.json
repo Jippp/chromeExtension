@@ -9,6 +9,9 @@
 
 	// 插件描述
 	"description": "chrome extension test",
+	// 使用locales中的值
+	// "description": "__MSG_pluginDesc__",
+
 	// 图标
 	"icons": {
 		"16": "img/hello.png", // 信息栏显示的图标
